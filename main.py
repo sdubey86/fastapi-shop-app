@@ -1,13 +1,6 @@
 from fastapi import FastAPI
+from app.routes import hello_world, user
 
 app = FastAPI()
-
-
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
-
-
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    return {"message": f"Hello {name}"}
+app.include_router(hello_world.router) # This line is added to the main.py file
+app.include_router(user.user_router)
