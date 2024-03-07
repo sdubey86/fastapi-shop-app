@@ -3,3 +3,6 @@ uvicorn==0.15.0
 pydantic
 sqlalchemy
 databases[postgresql]
+psycopg2-binary
+rich
+alembic

@@ -1,44 +1,43 @@
-from sqlalchemy import Integer, String, Float, Column, Text
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import Session
-
 from app.db.database import Base, engine
-from app.schemas import Product, ProductCreate, ProductUpdate
+import sqlalchemy
 
-# Ensure tables are created (run once or integrate into a migration system)
-Base.metadata.create_all(bind=engine)
+class Product(Base):
+    __tablename__ = "products"
 
-# CRUD Operations
-async def create_product(db: Session, product: ProductCreate) -> Product:
-    db_product = Product(**product.dict())
-    db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
-    return db_product
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)
+    description = Column(String, index=True)
+    price = Column(Integer)
 
-async def get_product(db: Session, product_id: int) -> Product | None:
-    return db.query(Product).filter(Product.id == product_id).first()
+    def to_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-async def get_products(db: Session) -> list[Product]:
-    return db.query(Product).all()
-
-async def update_product(db: Session, product_id: int, product: ProductUpdate) -> Product:
-    db_product = await get_product(db, product_id)
-    if db_product:
-        update_data = product.dict(exclude_unset=True)
-
-        for key, value in update_data.items():
-            setattr(db_product, key, value)
-
+    @classmethod
+    def create(cls, db: Session, product: 'ProductCreate') -> 'Product':
+        db_product = cls(**product.dict())
+        db.add(db_product)
         db.commit()
         db.refresh(db_product)
-        return db_product
-    else:
-        return None
+        return db_product.__dict__
 
-async def delete_product(db: Session, product_id: int) -> None:
-    db_product = await get_product(db, product_id)
-    if db_product:
-        db.delete(db_product)
-        db.commit()
-    else:
-        return None
+    @classmethod
+    def get(cls, db: Session, product_id: int) -> 'Product':
+        return db.query(cls).filter(cls.id == product_id).first()
+    
+
+    @classmethod
+    def get_all(cls, db: Session) -> list['Product']:
+        return [product.to_dict() for product in db.query(cls).all()]
+
+    @classmethod
+    def update(cls, db: Session, product_id: int, product: 'ProductUpdate') -> 'Product':
+        db_product = cls.get(db, product_id)
+        if db_product:
+            update_data = product.dict(exclude_unset=True)
+            for key, value in update_data.items():
+                setattr(db_product, key, value)
+            db.commit()
+            db.refresh(db_product)
+        return db_product
