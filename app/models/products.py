@@ -32,6 +32,9 @@ class Product(Base):
     @classmethod
     def get_all(cls, db: Session) -> list['Product']:
         return [product.to_dict() for product in db.query(cls).all()]
+    
+    def get_total_quantity(cls, db: Session) -> int:
+        return db.query(func.sum(cls.quantity)).scalar()
 
     @classmethod
     def update(cls, db: Session, product_id: int, product: 'ProductUpdate') -> 'Product':
