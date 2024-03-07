@@ -6,8 +6,10 @@ class ProductBase(BaseModel):
     description: str | None = None
     price: float
 
-class ProductCreate(ProductBase):
-    pass
+class ProductCreate(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
 
 class ProductUpdate(ProductBase):
     pass

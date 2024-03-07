@@ -24,7 +24,7 @@ class Product(Base):
 
     @classmethod
     def get(cls, db: Session, product_id: int) -> 'Product':
-        return db.query(cls).filter(cls.id == product_id).first()
+        return db.query(cls).filter(cls.id == product_id).first().__dict__
     
 
     @classmethod

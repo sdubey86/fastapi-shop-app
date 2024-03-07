@@ -20,7 +20,7 @@ async def get_products(db: Session = Depends(get_db)):
 
 @productRouter.get("/{product_id}", response_model=ProductBase)
 async def get_product(product_id: int, db: Session = Depends(get_db)):
-    product = await Product.get(db, product_id)
+    product = Product.get(db, product_id)
     if product is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
     return product
