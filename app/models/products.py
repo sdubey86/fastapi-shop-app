@@ -10,6 +10,8 @@ class Product(Base):
     name = Column(String, index=True)
     description = Column(String, index=True)
     price = Column(Integer)
+    quantity = Column(Integer) 
+
 
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

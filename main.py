@@ -13,7 +13,9 @@ async def startup_event():
     create_tables()
 
 
-
 def create_tables():
     with Session(engine) as session:
         Base.metadata.create_all(engine)
+
+
+
